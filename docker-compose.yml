@@ -1,0 +1,59 @@
+version: '3'
+services:
+  # web1:
+  #   container_name: web1
+  #   build: .
+  #   command: >
+  #     bash -c './gradlew build -x test && java -jar ./build/libs/lock-0.0.1-SNAPSHOT.jar'
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
+
+  # web2:
+  #   container_name: web2
+  #   build: .
+  #   command: >
+  #     bash -c './gradlew build -x test && java -jar ./build/libs/lock-0.0.1-SNAPSHOT.jar'
+  #   ports:
+  #     - 8080:8080
+  #   depends_on:
+  #     - postgres
+
+  postgres:
+    container_name: db
+    image: postgres
+    environment:
+      POSTGRES_USER: ${db_user}
+      POSTGRES_PASSWORD: ${db_password}
+      POSTGRES_DB: ${db_name}
+      TZ: 'Asia/Tokyo'
+    ports:
+      - ${db_port}:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: pdadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${pgadmin_email}
+      PGADMIN_DEFAULT_PASSWORD: ${pgadmin_password}
+    ports:
+      - ${pgadmin_port}:80
+    depends_on:
+      - postgres
+
+  # load-balancing:
+  #   container_name: lb
+  #   image: nginx
+  #   ports:
+  #     - 8000:80
+  #   volumes:
+  #     - ./nginx.conf:/etc/nginx/nginx.conf
+  #   depends_on:
+  #     - web1
+  #     - web2
+
+volumes:
+  db-data:
